@@ -58,12 +58,25 @@ app.post('/restaurants', (req, res) => {
 
 app.put('/restaurants/:id', (req, res) => {
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
-    const msg = '';
-    console.error(`${msg}`);
-    // return error
+    const message = (
+      `Request path id (${req.params.id}) and request body id ` +
+      `(${req.body.id}) must match`);
+    console.error(message);
+    return res.status(400).json({message: message});
   }
+  // N.B. -- this assumes that clients are always sending over existing or
+  // updated data for these fields.
   Restaurant
-    .update()
+    .findByIdAndUpdate(req.params.id, {
+      $set: {
+        name: req.body.name,
+        borough: req.body.borough,
+        cuisine: req.body.cuisine,
+        address: req.body.address,
+        grades: req.body.ratings,
+        restaurant_id: req.body.restaurant_id
+      }
+    })
     .then(
       restaurant => res.status(204).end(),
       err => res.status(500).json({message: 'Internal server error'}));

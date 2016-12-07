@@ -23,7 +23,7 @@ app.get('/restaurants', (req, res) => {
     // documents, and that's too much to process/return
     .limit(10)
     // `exec` returns a promise
-    // .exec()
+    .exec()
     // success callback: for each restaurant we got back, we'll
     // call the `.apiRepr` instance method we've created in
     // models.js in order to only expose the data we want the API return.
@@ -90,17 +90,22 @@ app.put('/restaurants/:id', (req, res) => {
     console.error(message);
     res.status(400).json({message: message});
   }
-  // N.B. -- this assumes that clients are always sending over existing or
-  // updated data for these fields.
+
+  // we only support a subset of fields being updateable.
+  // if the user sent over any of the updatableFields, we udpate those values
+  // in document
+  const toUpdate = {};
+  const updateableFields = ['name', 'borough', 'cuisine', 'address'];
+
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      toUpdate[field] = req.body[field];
+    }
+  });
+
   Restaurant
-    .findByIdAndUpdate(req.params.id, {
-      $set: {
-        name: req.body.name,
-        borough: req.body.borough,
-        cuisine: req.body.cuisine,
-        address: req.body.address,
-      }
-    })
+    // all key/value pairs in toUpdate will be updated -- that's what `$set` does
+    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
     .then(restaurant => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });

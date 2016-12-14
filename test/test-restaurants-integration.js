@@ -13,27 +13,24 @@ const {runServer, app} = require('../server');
 
 chai.use(chaiHttp);
 
-// this function deletes the entire database.
-// we'll call it in an `afterEach` block below
-// to ensure  ata from one test does not stick
-// around for next one
-//
-// we have this function return a promise because
-// mongoose operations are asynchronous. we can either
-// call a `done` callback or return a promise in our
-// `before`, `beforeEach` etc. functions.
-// https://mochajs.org/#asynchronous-hooks
-function tearDownDb() {
-  return new Promise((resolve, reject) => {
-    console.warn('Deleting database');
-    mongoose.connection.dropDatabase()
-      .then(result => resolve(result))
-      .catch(err => reject(err));
-  });
+// used to put randomish documents in db
+// so we have data to work with and assert about.
+// we use the Faker library to automatically
+// generate placeholder values for author, title, content
+// and then we insert that data into mongo
+function seedRestaurantData() {
+  console.info('seeding blog post data');
+  const seedData = [];
+
+  for (let i=1; i<=10; i++) {
+    seedData.push(generateRestaurantData());
+  }
+  // this will return a promise
+  return Restaurant.insertMany(seedData);
 }
 
 // used to generate data to put in db
-function gnerateBoroughName() {
+function generateBoroughName() {
   const boroughs = [
     'Manhattan', 'Queens', 'Brooklyn', 'Bronx', 'Staten Island'];
   return boroughs[Math.floor(Math.random() * boroughs.length)];
@@ -61,7 +58,7 @@ function generateGrade() {
 function generateRestaurantData() {
   return {
     name: faker.company.companyName(),
-    borough: gnerateBoroughName(),
+    borough: generateBoroughName(),
     cuisine: gnerateCuisineType(),
     address: {
       building: faker.address.streetAddress(),
@@ -72,22 +69,25 @@ function generateRestaurantData() {
   }
 }
 
-// used to put randomish documents in db
-// so we have data to work with and assert about.
-// we use the Faker library to automatically
-// generate placeholder values for author, title, content
-// and then we insert that data into mongo
-function seedRestaurantData() {
-  console.info('seeding blog post data');
-  const seedData = [];
 
-  for (let i=1; i<=10; i++) {
-    seedData.push(generateRestaurantData());
-  }
-  // this will return a promise
-  return Restaurant.insertMany(seedData);
+// this function deletes the entire database.
+// we'll call it in an `afterEach` block below
+// to ensure  ata from one test does not stick
+// around for next one
+//
+// we have this function return a promise because
+// mongoose operations are asynchronous. we can either
+// call a `done` callback or return a promise in our
+// `before`, `beforeEach` etc. functions.
+// https://mochajs.org/#asynchronous-hooks
+function tearDownDb() {
+  return new Promise((resolve, reject) => {
+    console.warn('Deleting database');
+    mongoose.connection.dropDatabase()
+      .then(result => resolve(result))
+      .catch(err => reject(err));
+  });
 }
-
 
 describe('Restaurants API resource', function() {
 
@@ -167,7 +167,8 @@ describe('Restaurants API resource', function() {
           resRestaurant.cuisine.should.equal(restaurant.cuisine);
           resRestaurant.borough.should.equal(restaurant.borough);
           resRestaurant.address.should.contain(restaurant.address.building);
-          resRestaurant.grade.should.not.be.null;
+
+          resRestaurant.grade.should.equal(restaurant.grade);
 
           done();
         })
@@ -183,6 +184,7 @@ describe('Restaurants API resource', function() {
     it('should add a new restaurant', function(done) {
 
       const newRestaurant = generateRestaurantData();
+      let mostRecentGrade;
 
       chai.request(app)
         .post('/restaurants')
@@ -199,10 +201,22 @@ describe('Restaurants API resource', function() {
           res.body.cuisine.should.equal(newRestaurant.cuisine);
           res.body.borough.should.equal(newRestaurant.borough);
 
-          const mostRecentGrade = newRestaurant.grades.sort(
+          mostRecentGrade = newRestaurant.grades.sort(
             (a, b) => b.date - a.date)[0].grade;
 
           res.body.grade.should.equal(mostRecentGrade);
+          return Restaurant.findById(res.body.id);
+        })
+        .then(function(restaurant) {
+          restaurant.name.should.equal(newRestaurant.name);
+          restaurant.cuisine.should.equal(newRestaurant.cuisine);
+          restaurant.borough.should.equal(newRestaurant.borough);
+          restaurant.name.should.equal(newRestaurant.name);
+          restaurant.grade.should.equal(mostRecentGrade);
+          restaurant.address.building.should.equal(newRestaurant.address.building);
+          restaurant.address.street.should.equal(newRestaurant.address.street);
+          restaurant.address.zipcode.should.equal(newRestaurant.address.zipcode);
+
           done();
         })
         .catch(function(err) {
@@ -273,7 +287,7 @@ describe('Restaurants API resource', function() {
         .then(_restaurant => {
           // when a variable's value is null, chaining `should`
           // doesn't work. so `_restaurant.should.be.null` would raise
-          // an error. `should.be.null(_restaurant)` is how we can 
+          // an error. `should.be.null(_restaurant)` is how we can
           // make assertions about a null value.
           should.not.exist(_restaurant);
           done();

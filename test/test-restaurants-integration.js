@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 // this makes the should syntax available throughout
 // this module
-chai.should();
+const should = chai.should();
 
 const {Restaurant} = require('../models');
 const {runServer, app} = require('../server');
@@ -270,8 +270,12 @@ describe('Restaurants API resource', function() {
           res.should.have.status(204);
           return Restaurant.findById(restaurant.id);
         })
-        .then(restaurant => {
-          expect(restaurant).to.be.null;
+        .then(_restaurant => {
+          // when a variable's value is null, chaining `should`
+          // doesn't work. so `_restaurant.should.be.null` would raise
+          // an error. `should.be.null(_restaurant)` is how we can 
+          // make assertions about a null value.
+          should.not.exist(_restaurant);
           done();
         })
         .catch(err => {console.log(err)});

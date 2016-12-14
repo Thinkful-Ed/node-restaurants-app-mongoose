@@ -124,7 +124,7 @@ describe('Restaurants API resource', function() {
       let res;
       chai.request(app)
         .get('/restaurants')
-        .then(_res => {
+        .then(function(_res) {
           // so subsequent .then blocks can access resp obj.
           res = _res;
           res.should.have.status(200);
@@ -132,11 +132,11 @@ describe('Restaurants API resource', function() {
           res.body.restaurants.should.have.length.of.at.least(1);
           return Restaurant.count();
         })
-        .then(count => {
+        .then(function(count) {
           res.body.restaurants.should.have.length.of(count);
           done();
         })
-        .catch(err => console.error(err));
+        .catch(function(err) {console.error(err)});
     });
 
 
@@ -160,7 +160,7 @@ describe('Restaurants API resource', function() {
           resRestaurant = res.body.restaurants[0];
           return Restaurant.findById(resRestaurant.id);
         })
-        .then(restaurant => {
+        .then(function(restaurant) {
 
           resRestaurant.id.should.equal(restaurant.id);
           resRestaurant.name.should.equal(restaurant.name);
@@ -172,7 +172,7 @@ describe('Restaurants API resource', function() {
 
           done();
         })
-        .catch(err => console.error(err));
+        .catch(function(err) {console.error(err)});
     });
   });
 
@@ -240,7 +240,7 @@ describe('Restaurants API resource', function() {
 
       Restaurant
         .findOne()
-        .then(restaurant =>{
+        .then(function(restaurant) {
           updateData.id = restaurant.id;
 
           // make request then inspect it to make sure it reflects
@@ -249,17 +249,17 @@ describe('Restaurants API resource', function() {
             .put(`/restaurants/${restaurant.id}`)
             .send(updateData);
         })
-        .then(res => {
+        .then(function(res) {
           res.should.have.status(204);
 
           return Restaurant.findById(updateData.id);
         })
-        .then(restaurant => {
+        .then(function(restaurant) {
           restaurant.name.should.equal(updateData.name);
           restaurant.cuisine.should.equal(updateData.cuisine);
           done();
         })
-        .catch(err => console.error(err));
+        .catch(function(err) {console.error(err)});
       });
   });
 
@@ -276,15 +276,15 @@ describe('Restaurants API resource', function() {
       Restaurant
         .findOne()
         .exec()
-        .then(_restaurant => {
+        .then(function(_restaurant) {
           restaurant = _restaurant;
           return chai.request(app).delete(`/restaurants/${restaurant.id}`);
         })
-        .then(res => {
+        .then(function(res) {
           res.should.have.status(204);
           return Restaurant.findById(restaurant.id);
         })
-        .then(_restaurant => {
+        .then(function(_restaurant) {
           // when a variable's value is null, chaining `should`
           // doesn't work. so `_restaurant.should.be.null` would raise
           // an error. `should.be.null(_restaurant)` is how we can
@@ -292,7 +292,7 @@ describe('Restaurants API resource', function() {
           should.not.exist(_restaurant);
           done();
         })
-        .catch(err => {console.log(err)});
+        .catch(function(err) {console.log(err)});
     });
   });
 });

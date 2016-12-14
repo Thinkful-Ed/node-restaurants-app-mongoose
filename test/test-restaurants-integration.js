@@ -3,13 +3,10 @@ const chaiHttp = require('chai-http');
 const faker = require('faker');
 const mongoose = require('mongoose');
 
-const expect = chai.expect;
-
 // this makes the should syntax available throughout
 // this module
 chai.should();
 
-const {DATABASE_URL} = require('../config');
 const {Restaurant} = require('../models');
 const {runServer, app} = require('../server');
 

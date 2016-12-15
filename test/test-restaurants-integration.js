@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const should = chai.should();
 
 const {Restaurant} = require('../models');
-const {runServer, app} = require('../server');
+const {app, runServer, closeServer} = require('../server');
 
 
 chai.use(chaiHttp);
@@ -105,6 +105,10 @@ describe('Restaurants API resource', function() {
 
   afterEach(function() {
     return tearDownDb();
+  });
+
+  after(function() {
+    return closeServer();
   })
 
   // note the use of nested `describe` blocks.

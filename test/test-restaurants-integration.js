@@ -135,8 +135,7 @@ describe('Restaurants API resource', function() {
         .then(function(count) {
           res.body.restaurants.should.have.length.of(count);
           done();
-        })
-        .catch(function(err) {console.error(err)});
+        });
     });
 
 
@@ -171,8 +170,7 @@ describe('Restaurants API resource', function() {
           resRestaurant.grade.should.equal(restaurant.grade);
 
           done();
-        })
-        .catch(function(err) {console.error(err)});
+        });
     });
   });
 
@@ -218,10 +216,7 @@ describe('Restaurants API resource', function() {
           restaurant.address.zipcode.should.equal(newRestaurant.address.zipcode);
 
           done();
-        })
-        .catch(function(err) {
-          console.error(err);
-        })
+        });
     });
   });
 
@@ -258,8 +253,7 @@ describe('Restaurants API resource', function() {
           restaurant.name.should.equal(updateData.name);
           restaurant.cuisine.should.equal(updateData.cuisine);
           done();
-        })
-        .catch(function(err) {console.error(err)});
+        });
       });
   });
 
@@ -291,8 +285,7 @@ describe('Restaurants API resource', function() {
           // make assertions about a null value.
           should.not.exist(_restaurant);
           done();
-        })
-        .catch(function(err) {console.log(err)});
+        });
     });
   });
 });

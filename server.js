@@ -106,6 +106,7 @@ app.put('/restaurants/:id', (req, res) => {
   Restaurant
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
     .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .exec()
     .then(restaurant => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
@@ -113,6 +114,7 @@ app.put('/restaurants/:id', (req, res) => {
 app.delete('/restaurants/:id', (req, res) => {
   Restaurant
     .findByIdAndRemove(req.params.id)
+    .exec()
     .then(restaurant => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });

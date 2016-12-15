@@ -37,7 +37,7 @@ function generateBoroughName() {
 }
 
 // used to generate data to put in db
-function gnerateCuisineType() {
+function generateCuisineType() {
   const cuisines = ['Italian', 'Thai', 'Colombian'];
   return cuisines[Math.floor(Math.random() * cuisines.length)];
 }
@@ -59,7 +59,7 @@ function generateRestaurantData() {
   return {
     name: faker.company.companyName(),
     borough: generateBoroughName(),
-    cuisine: gnerateCuisineType(),
+    cuisine: generateCuisineType(),
     address: {
       building: faker.address.streetAddress(),
       street: faker.address.streetName(),
@@ -230,10 +230,11 @@ describe('Restaurants API resource', function() {
       const updateData = {
         name: 'fofofofofofofof',
         cuisine: 'futuristic fusion'
-      }
+      };
 
       Restaurant
         .findOne()
+        .exec()
         .then(function(restaurant) {
           updateData.id = restaurant.id;
 
@@ -246,7 +247,7 @@ describe('Restaurants API resource', function() {
         .then(function(res) {
           res.should.have.status(204);
 
-          return Restaurant.findById(updateData.id);
+          return Restaurant.findById(updateData.id).exec();
         })
         .then(function(restaurant) {
           restaurant.name.should.equal(updateData.name);
@@ -274,7 +275,7 @@ describe('Restaurants API resource', function() {
         })
         .then(function(res) {
           res.should.have.status(204);
-          return Restaurant.findById(restaurant.id);
+          return Restaurant.findById(restaurant.id).exec();
         })
         .then(function(_restaurant) {
           // when a variable's value is null, chaining `should`

@@ -112,7 +112,7 @@ describe('Restaurants API resource', function() {
   // on proving something small
   describe('GET endpoint', function() {
 
-    it('should return all existing restaurants', function(done) {
+    it('should return all existing restaurants', function() {
       // strategy:
       //    1. get back all restaurants returned by by GET request to `/restaurants`
       //    2. prove res has right status, data type
@@ -122,7 +122,7 @@ describe('Restaurants API resource', function() {
       // need to have access to mutate and access `res` across
       // `.then()` calls below, so declare it here so can modify in place
       let res;
-      chai.request(app)
+      return chai.request(app)
         .get('/restaurants')
         .then(function(_res) {
           // so subsequent .then blocks can access resp obj.
@@ -134,16 +134,15 @@ describe('Restaurants API resource', function() {
         })
         .then(function(count) {
           res.body.restaurants.should.have.length.of(count);
-          done();
         });
     });
 
 
-    it('should return restaurants with right fields', function(done) {
+    it('should return restaurants with right fields', function() {
       // Strategy: Get back all restaurants, and ensure they have expected keys
 
       let resRestaurant;
-      chai.request(app)
+      return chai.request(app)
         .get('/restaurants')
         .then(function(res) {
           res.should.have.status(200);
@@ -168,8 +167,6 @@ describe('Restaurants API resource', function() {
           resRestaurant.address.should.contain(restaurant.address.building);
 
           resRestaurant.grade.should.equal(restaurant.grade);
-
-          done();
         });
     });
   });
@@ -179,12 +176,12 @@ describe('Restaurants API resource', function() {
     // then prove that the restaurant we get back has
     // right keys, and that `id` is there (which means
     // the data was inserted into db)
-    it('should add a new restaurant', function(done) {
+    it('should add a new restaurant', function() {
 
       const newRestaurant = generateRestaurantData();
       let mostRecentGrade;
 
-      chai.request(app)
+      return chai.request(app)
         .post('/restaurants')
         .send(newRestaurant)
         .then(function(res) {
@@ -214,8 +211,6 @@ describe('Restaurants API resource', function() {
           restaurant.address.building.should.equal(newRestaurant.address.building);
           restaurant.address.street.should.equal(newRestaurant.address.street);
           restaurant.address.zipcode.should.equal(newRestaurant.address.zipcode);
-
-          done();
         });
     });
   });
@@ -227,7 +222,7 @@ describe('Restaurants API resource', function() {
     //  2. Make a PUT request to update that restaurant
     //  3. Prove restaurant returned by request contains data we sent
     //  4. Prove restaurant in db is correctly updated
-    it('should update fields you send over', function(done) {
+    it('should update fields you send over', function() {
       const updateData = {
         name: 'fofofofofofofof',
         cuisine: 'futuristic fusion'
@@ -252,7 +247,6 @@ describe('Restaurants API resource', function() {
         .then(function(restaurant) {
           restaurant.name.should.equal(updateData.name);
           restaurant.cuisine.should.equal(updateData.cuisine);
-          done();
         });
       });
   });
@@ -263,11 +257,11 @@ describe('Restaurants API resource', function() {
     //  2. make a DELETE request for that restaurant's id
     //  3. assert that response has right status code
     //  4. prove that restaurant with the id doesn't exist in db anymore
-    it('delete a restaurant by id', function(done) {
+    it('delete a restaurant by id', function() {
 
       let restaurant;
 
-      Restaurant
+      return Restaurant
         .findOne()
         .exec()
         .then(function(_restaurant) {
@@ -284,7 +278,6 @@ describe('Restaurants API resource', function() {
           // an error. `should.be.null(_restaurant)` is how we can
           // make assertions about a null value.
           should.not.exist(_restaurant);
-          done();
         });
     });
   });

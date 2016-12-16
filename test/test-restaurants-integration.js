@@ -232,7 +232,7 @@ describe('Restaurants API resource', function() {
         cuisine: 'futuristic fusion'
       };
 
-      Restaurant
+      return Restaurant
         .findOne()
         .exec()
         .then(function(restaurant) {

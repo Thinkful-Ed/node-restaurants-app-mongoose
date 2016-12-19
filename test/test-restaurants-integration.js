@@ -74,19 +74,9 @@ function generateRestaurantData() {
 // we'll call it in an `afterEach` block below
 // to ensure  ata from one test does not stick
 // around for next one
-//
-// we have this function return a promise because
-// mongoose operations are asynchronous. we can either
-// call a `done` callback or return a promise in our
-// `before`, `beforeEach` etc. functions.
-// https://mochajs.org/#asynchronous-hooks
 function tearDownDb() {
-  return new Promise((resolve, reject) => {
     console.warn('Deleting database');
-    mongoose.connection.dropDatabase()
-      .then(result => resolve(result))
-      .catch(err => reject(err));
-  });
+    return mongoose.connection.dropDatabase();
 }
 
 describe('Restaurants API resource', function() {

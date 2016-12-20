@@ -61,7 +61,7 @@ app.post('/restaurants', (req, res) => {
   requiredFields.forEach(field => {
     // ensure that required fields have been sent over
     if (! (field in req.body && req.body[field])) {
-      res.status(400).json({message: `Must specify value for ${field}`});
+      return res.status(400).json({message: `Must specify value for ${field}`});
     }
   });
 

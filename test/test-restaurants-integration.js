@@ -9,7 +9,7 @@ const should = chai.should();
 
 const {Restaurant} = require('../models');
 const {app, runServer, closeServer} = require('../server');
-
+const {TEST_DATABASE_URL} = require('../config');
 
 chai.use(chaiHttp);
 
@@ -86,7 +86,7 @@ describe('Restaurants API resource', function() {
   // `seedRestaurantData` and `tearDownDb` each return a promise,
   // so we return the value returned by these function calls.
   before(function() {
-    return runServer();
+    return runServer(TEST_DATABASE_URL);
   });
 
   beforeEach(function() {

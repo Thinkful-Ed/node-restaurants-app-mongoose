@@ -130,14 +130,15 @@ app.use('*', function(req, res) {
 let server;
 
 // this function connects to our database, then starts the server
-function runServer() {
+function runServer(databaseUrl=DATABASE_URL, port=PORT) {
+
   return new Promise((resolve, reject) => {
-    mongoose.connect(DATABASE_URL, err => {
+    mongoose.connect(databaseUrl, err => {
       if (err) {
         return reject(err);
       }
-      server = app.listen(PORT, () => {
-        console.log(`Your app is listening on port ${PORT}`);
+      server = app.listen(port, () => {
+        console.log(`Your app is listening on port ${port}`);
         resolve();
       })
       .on('error', err => {

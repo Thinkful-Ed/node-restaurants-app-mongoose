@@ -18,5 +18,13 @@
   "devDependencies": {
     "mocha": "^3.2.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steviebuckets/node-restaurants-app-mongoose.git"
+  },
+  "bugs": {
+    "url": "https://github.com/steviebuckets/node-restaurants-app-mongoose/issues"
+  },
+  "homepage": "https://github.com/steviebuckets/node-restaurants-app-mongoose#readme",
   "description": ""
 }

@@ -19,7 +19,7 @@ chai.use(chaiHttp);
 // generate placeholder values for author, title, content
 // and then we insert that data into mongo
 function seedRestaurantData() {
-  console.info('seeding blog post data');
+  console.info('seeding restaurant data');
   const seedData = [];
 
   for (let i=1; i<=10; i++) {

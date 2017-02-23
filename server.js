@@ -90,7 +90,7 @@ app.put('/restaurants/:id', (req, res) => {
       `Request path id (${req.params.id}) and request body id ` +
       `(${req.body.id}) must match`);
     console.error(message);
-    res.status(400).json({message: message});
+    return res.status(400).json({message: message});
   }
 
   // we only support a subset of fields being updateable.

@@ -72,7 +72,7 @@ function generateRestaurantData() {
 
 // this function deletes the entire database.
 // we'll call it in an `afterEach` block below
-// to ensure  ata from one test does not stick
+// to ensure data from one test does not stick
 // around for next one
 function tearDownDb() {
     console.warn('Deleting database');

@@ -200,7 +200,6 @@ describe('Restaurants API resource', function() {
           restaurant.name.should.equal(newRestaurant.name);
           restaurant.cuisine.should.equal(newRestaurant.cuisine);
           restaurant.borough.should.equal(newRestaurant.borough);
-          restaurant.name.should.equal(newRestaurant.name);
           restaurant.grade.should.equal(mostRecentGrade);
           restaurant.address.building.should.equal(newRestaurant.address.building);
           restaurant.address.street.should.equal(newRestaurant.address.street);

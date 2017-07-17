@@ -22,8 +22,6 @@ app.get('/restaurants', (req, res) => {
     // we're limiting because restaurants db has > 25,000
     // documents, and that's too much to process/return
     .limit(10)
-    // `exec` returns a promise
-    .exec()
     // success callback: for each restaurant we got back, we'll
     // call the `.apiRepr` instance method we've created in
     // models.js in order to only expose the data we want the API return.
@@ -46,7 +44,6 @@ app.get('/restaurants/:id', (req, res) => {
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
     .findById(req.params.id)
-    .exec()
     .then(restaurant =>res.json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
@@ -90,7 +87,7 @@ app.put('/restaurants/:id', (req, res) => {
       `Request path id (${req.params.id}) and request body id ` +
       `(${req.body.id}) must match`);
     console.error(message);
-    res.status(400).json({message: message});
+    return res.status(400).json({message: message});
   }
 
   // we only support a subset of fields being updateable.
@@ -108,7 +105,6 @@ app.put('/restaurants/:id', (req, res) => {
   Restaurant
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
     .findByIdAndUpdate(req.params.id, {$set: toUpdate})
-    .exec()
     .then(restaurant => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
@@ -116,7 +112,6 @@ app.put('/restaurants/:id', (req, res) => {
 app.delete('/restaurants/:id', (req, res) => {
   Restaurant
     .findByIdAndRemove(req.params.id)
-    .exec()
     .then(restaurant => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });

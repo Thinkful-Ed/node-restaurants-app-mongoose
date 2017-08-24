@@ -223,7 +223,6 @@ describe('Restaurants API resource', function() {
 
       return Restaurant
         .findOne()
-        .exec()
         .then(function(restaurant) {
           updateData.id = restaurant.id;
 
@@ -236,7 +235,7 @@ describe('Restaurants API resource', function() {
         .then(function(res) {
           res.should.have.status(204);
 
-          return Restaurant.findById(updateData.id).exec();
+          return Restaurant.findById(updateData.id);
         })
         .then(function(restaurant) {
           restaurant.name.should.equal(updateData.name);
@@ -257,14 +256,13 @@ describe('Restaurants API resource', function() {
 
       return Restaurant
         .findOne()
-        .exec()
         .then(function(_restaurant) {
           restaurant = _restaurant;
           return chai.request(app).delete(`/restaurants/${restaurant.id}`);
         })
         .then(function(res) {
           res.should.have.status(204);
-          return Restaurant.findById(restaurant.id).exec();
+          return Restaurant.findById(restaurant.id);
         })
         .then(function(_restaurant) {
           // when a variable's value is null, chaining `should`

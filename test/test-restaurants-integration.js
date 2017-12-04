@@ -1,3 +1,5 @@
+'use strict';
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const faker = require('faker');
@@ -49,7 +51,7 @@ function generateGrade() {
   return {
     date: faker.date.past(),
     grade: grade
-  }
+  };
 }
 
 // generate an object represnting a restaurant.
@@ -66,7 +68,7 @@ function generateRestaurantData() {
       zipcode: faker.address.zipCode()
     },
     grades: [generateGrade(), generateGrade(), generateGrade()]
-  }
+  };
 }
 
 
@@ -75,8 +77,8 @@ function generateRestaurantData() {
 // to ensure  ata from one test does not stick
 // around for next one
 function tearDownDb() {
-    console.warn('Deleting database');
-    return mongoose.connection.dropDatabase();
+  console.warn('Deleting database');
+  return mongoose.connection.dropDatabase();
 }
 
 describe('Restaurants API resource', function() {
@@ -99,7 +101,7 @@ describe('Restaurants API resource', function() {
 
   after(function() {
     return closeServer();
-  })
+  });
 
   // note the use of nested `describe` blocks.
   // this allows us to make clearer, more discrete tests that focus
@@ -241,7 +243,7 @@ describe('Restaurants API resource', function() {
           restaurant.name.should.equal(updateData.name);
           restaurant.cuisine.should.equal(updateData.cuisine);
         });
-      });
+    });
   });
 
   describe('DELETE endpoint', function() {

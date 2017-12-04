@@ -1,3 +1,5 @@
+'use strict';
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -8,12 +10,11 @@ mongoose.Promise = global.Promise;
 
 // config.js is where we control constants for entire
 // app like PORT and DATABASE_URL
-const {PORT, DATABASE_URL} = require('./config');
-const {Restaurant} = require('./models');
+const { PORT, DATABASE_URL } = require('./config');
+const { Restaurant } = require('./models');
 
 const app = express();
 app.use(bodyParser.json());
-
 
 // GET requests to /restaurants => return 10 restaurants
 app.get('/restaurants', (req, res) => {
@@ -31,10 +32,9 @@ app.get('/restaurants', (req, res) => {
           (restaurant) => restaurant.apiRepr())
       });
     })
-    .catch(
-      err => {
-        console.error(err);
-        res.status(500).json({message: 'Internal server error'});
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 
@@ -44,10 +44,10 @@ app.get('/restaurants/:id', (req, res) => {
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
     .findById(req.params.id)
-    .then(restaurant =>res.json(restaurant.apiRepr()))
+    .then(restaurant => res.json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
-        res.status(500).json({message: 'Internal server error'})
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 
@@ -55,10 +55,10 @@ app.get('/restaurants/:id', (req, res) => {
 app.post('/restaurants', (req, res) => {
 
   const requiredFields = ['name', 'borough', 'cuisine'];
-  for (let i=0; i<requiredFields.length; i++) {
+  for (let i = 0; i < requiredFields.length; i++) {
     const field = requiredFields[i];
     if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
+      const message = `Missing \`${field}\` in request body`;
       console.error(message);
       return res.status(400).send(message);
     }
@@ -70,12 +70,12 @@ app.post('/restaurants', (req, res) => {
       borough: req.body.borough,
       cuisine: req.body.cuisine,
       grades: req.body.grades,
-      address: req.body.address})
-    .then(
-      restaurant => res.status(201).json(restaurant.apiRepr()))
+      address: req.body.address
+    })
+    .then(restaurant => res.status(201).json(restaurant.apiRepr()))
     .catch(err => {
       console.error(err);
-      res.status(500).json({message: 'Internal server error'});
+      res.status(500).json({ message: 'Internal server error' });
     });
 });
 
@@ -87,7 +87,7 @@ app.put('/restaurants/:id', (req, res) => {
       `Request path id (${req.params.id}) and request body id ` +
       `(${req.body.id}) must match`);
     console.error(message);
-    res.status(400).json({message: message});
+    return res.status(400).json({ message: message });
   }
 
   // we only support a subset of fields being updateable.
@@ -104,21 +104,21 @@ app.put('/restaurants/:id', (req, res) => {
 
   Restaurant
     // all key/value pairs in toUpdate will be updated -- that's what `$set` does
-    .findByIdAndUpdate(req.params.id, {$set: toUpdate})
+    .findByIdAndUpdate(req.params.id, { $set: toUpdate })
     .then(restaurant => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
 app.delete('/restaurants/:id', (req, res) => {
   Restaurant
     .findByIdAndRemove(req.params.id)
     .then(restaurant => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
 // catch-all endpoint if client makes request to non-existent endpoint
-app.use('*', function(req, res) {
-  res.status(404).json({message: 'Not Found'});
+app.use('*', function (req, res) {
+  res.status(404).json({ message: 'Not Found' });
 });
 
 // closeServer needs access to a server object, but that only
@@ -127,10 +127,10 @@ app.use('*', function(req, res) {
 let server;
 
 // this function connects to our database, then starts the server
-function runServer(databaseUrl=DATABASE_URL, port=PORT) {
+function runServer(databaseUrl = DATABASE_URL, port = PORT) {
 
   return new Promise((resolve, reject) => {
-    mongoose.connect(databaseUrl, err => {
+    mongoose.connect(databaseUrl, {useMongoClient: true}, err => {
       if (err) {
         return reject(err);
       }
@@ -138,10 +138,10 @@ function runServer(databaseUrl=DATABASE_URL, port=PORT) {
         console.log(`Your app is listening on port ${port}`);
         resolve();
       })
-      .on('error', err => {
-        mongoose.disconnect();
-        reject(err);
-      });
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
     });
   });
 }
@@ -150,15 +150,15 @@ function runServer(databaseUrl=DATABASE_URL, port=PORT) {
 // use it in our integration tests later.
 function closeServer() {
   return mongoose.disconnect().then(() => {
-     return new Promise((resolve, reject) => {
-       console.log('Closing server');
-       server.close(err => {
-           if (err) {
-               return reject(err);
-           }
-           resolve();
-       });
-     });
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
   });
 }
 
@@ -166,6 +166,6 @@ function closeServer() {
 // runs. but we also export the runServer command so other code (for instance, test code) can start the server as needed.
 if (require.main === module) {
   runServer().catch(err => console.error(err));
-};
+}
 
-module.exports = {app, runServer, closeServer};
+module.exports = { app, runServer, closeServer };

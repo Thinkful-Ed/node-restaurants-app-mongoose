@@ -24,12 +24,12 @@ app.get('/restaurants', (req, res) => {
     // documents, and that's too much to process/return
     .limit(10)
     // success callback: for each restaurant we got back, we'll
-    // call the `.apiRepr` instance method we've created in
+    // call the `.serialize` instance method we've created in
     // models.js in order to only expose the data we want the API return.
     .then(restaurants => {
       res.json({
         restaurants: restaurants.map(
-          (restaurant) => restaurant.apiRepr())
+          (restaurant) => restaurant.serialize())
       });
     })
     .catch(err => {
@@ -44,7 +44,7 @@ app.get('/restaurants/:id', (req, res) => {
     // this is a convenience method Mongoose provides for searching
     // by the object _id property
     .findById(req.params.id)
-    .then(restaurant => res.json(restaurant.apiRepr()))
+    .then(restaurant => res.json(restaurant.serialize()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error' });
@@ -72,7 +72,7 @@ app.post('/restaurants', (req, res) => {
       grades: req.body.grades,
       address: req.body.address
     })
-    .then(restaurant => res.status(201).json(restaurant.apiRepr()))
+    .then(restaurant => res.status(201).json(restaurant.serialize()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error' });

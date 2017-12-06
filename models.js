@@ -39,7 +39,7 @@ restaurantSchema.virtual('grade').get(function() {
 // this is an *instance method* which will be available on all instances
 // of the model. This method will be used to return an object that only
 // exposes *some* of the fields we want from the underlying data
-restaurantSchema.methods.apiRepr = function() {
+restaurantSchema.methods.serialize = function() {
 
   return {
     id: this._id,

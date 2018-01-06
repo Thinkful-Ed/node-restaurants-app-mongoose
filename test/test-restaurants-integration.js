@@ -5,9 +5,9 @@ const chaiHttp = require('chai-http');
 const faker = require('faker');
 const mongoose = require('mongoose');
 
-// this makes the should syntax available throughout
+// this makes the expect syntax available throughout
 // this module
-const should = chai.should();
+const expect = chai.expect;
 
 const {Restaurant} = require('../models');
 const {app, runServer, closeServer} = require('../server');
@@ -121,15 +121,15 @@ describe('Restaurants API resource', function() {
       return chai.request(app)
         .get('/restaurants')
         .then(function(_res) {
-          // so subsequent .then blocks can access resp obj.
+          // so subsequent .then blocks can access response object
           res = _res;
-          res.should.have.status(200);
+          expect(res).to.have.status(200);
           // otherwise our db seeding didn't work
-          res.body.restaurants.should.have.length.of.at.least(1);
+          expect(res.body.restaurants).to.have.length.of.at.least(1);
           return Restaurant.count();
         })
         .then(function(count) {
-          res.body.restaurants.should.have.length.of(count);
+          expect(res.body.restaurants).to.have.length.of(count);
         });
     });
 
@@ -141,14 +141,14 @@ describe('Restaurants API resource', function() {
       return chai.request(app)
         .get('/restaurants')
         .then(function(res) {
-          res.should.have.status(200);
-          res.should.be.json;
-          res.body.restaurants.should.be.a('array');
-          res.body.restaurants.should.have.length.of.at.least(1);
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body.restaurants).to.be.a('array');
+          expect(res.body.restaurants).to.have.length.of.at.least(1);
 
           res.body.restaurants.forEach(function(restaurant) {
-            restaurant.should.be.a('object');
-            restaurant.should.include.keys(
+            expect(restaurant).to.be.a('object');
+            expect(restaurant).to.include.keys(
               'id', 'name', 'cuisine', 'borough', 'grade', 'address');
           });
           resRestaurant = res.body.restaurants[0];
@@ -156,13 +156,13 @@ describe('Restaurants API resource', function() {
         })
         .then(function(restaurant) {
 
-          resRestaurant.id.should.equal(restaurant.id);
-          resRestaurant.name.should.equal(restaurant.name);
-          resRestaurant.cuisine.should.equal(restaurant.cuisine);
-          resRestaurant.borough.should.equal(restaurant.borough);
-          resRestaurant.address.should.contain(restaurant.address.building);
+          expect(resRestaurant.id).to.equal(restaurant.id);
+          expect(resRestaurant.name).to.equal(restaurant.name);
+          expect(resRestaurant.cuisine).to.equal(restaurant.cuisine);
+          expect(resRestaurant.borough).to.equal(restaurant.borough);
+          expect(resRestaurant.address).to.contain(restaurant.address.building);
 
-          resRestaurant.grade.should.equal(restaurant.grade);
+          expect(resRestaurant.grade).to.equal(restaurant.grade);
         });
     });
   });
@@ -181,31 +181,31 @@ describe('Restaurants API resource', function() {
         .post('/restaurants')
         .send(newRestaurant)
         .then(function(res) {
-          res.should.have.status(201);
-          res.should.be.json;
-          res.body.should.be.a('object');
-          res.body.should.include.keys(
+          expect(res).to.have.status(201);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body).to.include.keys(
             'id', 'name', 'cuisine', 'borough', 'grade', 'address');
-          res.body.name.should.equal(newRestaurant.name);
+          expect(res.body.name).to.equal(newRestaurant.name);
           // cause Mongo should have created id on insertion
-          res.body.id.should.not.be.null;
-          res.body.cuisine.should.equal(newRestaurant.cuisine);
-          res.body.borough.should.equal(newRestaurant.borough);
+          expect(res.body.id).to.not.be.null;
+          expect(res.body.cuisine).to.equal(newRestaurant.cuisine);
+          expect(res.body.borough).to.equal(newRestaurant.borough);
 
           mostRecentGrade = newRestaurant.grades.sort(
             (a, b) => b.date - a.date)[0].grade;
 
-          res.body.grade.should.equal(mostRecentGrade);
+          expect(res.body.grade).to.equal(mostRecentGrade);
           return Restaurant.findById(res.body.id);
         })
         .then(function(restaurant) {
-          restaurant.name.should.equal(newRestaurant.name);
-          restaurant.cuisine.should.equal(newRestaurant.cuisine);
-          restaurant.borough.should.equal(newRestaurant.borough);
-          restaurant.grade.should.equal(mostRecentGrade);
-          restaurant.address.building.should.equal(newRestaurant.address.building);
-          restaurant.address.street.should.equal(newRestaurant.address.street);
-          restaurant.address.zipcode.should.equal(newRestaurant.address.zipcode);
+          expect(restaurant.name).to.equal(newRestaurant.name);
+          expect(restaurant.cuisine).to.equal(newRestaurant.cuisine);
+          expect(restaurant.borough).to.equal(newRestaurant.borough);
+          expect(restaurant.grade).to.equal(mostRecentGrade);
+          expect(restaurant.address.building).to.equal(newRestaurant.address.building);
+          expect(restaurant.address.street).to.equal(newRestaurant.address.street);
+          expect(restaurant.address.zipcode).to.equal(newRestaurant.address.zipcode);
         });
     });
   });
@@ -235,13 +235,13 @@ describe('Restaurants API resource', function() {
             .send(updateData);
         })
         .then(function(res) {
-          res.should.have.status(204);
+          expect(res).to.have.status(204);
 
           return Restaurant.findById(updateData.id);
         })
         .then(function(restaurant) {
-          restaurant.name.should.equal(updateData.name);
-          restaurant.cuisine.should.equal(updateData.cuisine);
+          expect(restaurant.name).to.equal(updateData.name);
+          expect(restaurant.cuisine).to.equal(updateData.cuisine);
         });
     });
   });
@@ -263,15 +263,11 @@ describe('Restaurants API resource', function() {
           return chai.request(app).delete(`/restaurants/${restaurant.id}`);
         })
         .then(function(res) {
-          res.should.have.status(204);
+          expect(res).to.have.status(204);
           return Restaurant.findById(restaurant.id);
         })
         .then(function(_restaurant) {
-          // when a variable's value is null, chaining `should`
-          // doesn't work. so `_restaurant.should.be.null` would raise
-          // an error. `should.be.null(_restaurant)` is how we can
-          // make assertions about a null value.
-          should.not.exist(_restaurant);
+          expect(_restaurant).to.be.null;
         });
     });
   });

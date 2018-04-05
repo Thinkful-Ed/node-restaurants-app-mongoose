@@ -125,11 +125,11 @@ describe('Restaurants API resource', function() {
           res = _res;
           expect(res).to.have.status(200);
           // otherwise our db seeding didn't work
-          expect(res.body.restaurants).to.have.length.of.at.least(1);
+          expect(res.body.restaurants).to.have.lengthOf.at.least(1);
           return Restaurant.count();
         })
         .then(function(count) {
-          expect(res.body.restaurants).to.have.length.of(count);
+          expect(res.body.restaurants).to.have.lengthOf(count);
         });
     });
 
@@ -144,7 +144,7 @@ describe('Restaurants API resource', function() {
           expect(res).to.have.status(200);
           expect(res).to.be.json;
           expect(res.body.restaurants).to.be.a('array');
-          expect(res.body.restaurants).to.have.length.of.at.least(1);
+          expect(res.body.restaurants).to.have.lengthOf.at.least(1);
 
           res.body.restaurants.forEach(function(restaurant) {
             expect(restaurant).to.be.a('object');

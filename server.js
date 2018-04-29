@@ -1,6 +1,5 @@
 'use strict';
 
-const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -14,7 +13,7 @@ const { PORT, DATABASE_URL } = require('./config');
 const { Restaurant } = require('./models');
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
 // GET requests to /restaurants => return 10 restaurants
 app.get('/restaurants', (req, res) => {

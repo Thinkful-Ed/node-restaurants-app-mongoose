@@ -49,7 +49,7 @@ restaurantSchema.methods.serialize = function() {
     grade: this.grade,
     address: this.addressString
   };
-}
+};
 
 // note that all instance methods and virtual properties on our
 // schema must be defined *before* we make the call to `.model`.
